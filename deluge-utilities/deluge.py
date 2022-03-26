@@ -10,6 +10,14 @@ logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
 class Deluge:
     def __init__(self, username: str, password: str):
+        """
+        Initializing work with deluge.
+
+        Initialize work with the local deluge worker.
+
+        :param username: Login from deluge worker.
+        :param password: Password from deluge worker.
+        """
         self.client = LocalDelugeRPCClient(
             username=username,
             password=password,
@@ -19,6 +27,13 @@ class Deluge:
             raise ValueError()
 
     def torrent_dict(self) -> dict:
+        """
+        Getting the torrent list.
+
+        We get a modified torrent dictionary.
+
+        :return: dict torrents.
+        """
         logging.info("Start get list torrents")
         torrents = collections.defaultdict(list)
         for key, torrent in self.client.call(
@@ -33,6 +48,12 @@ class Deluge:
         return torrents
 
     def old_torrent_search(self):
+        """
+        Search and delete old torrents.
+
+        Delete similar torrents by name from the list, and then look in the new torrent folder for files that are not
+        in the torrent.
+        """
         torrents = self.torrent_dict()
         for _, torrent in torrents.items():
             list_torrents = sorted(torrent, key=lambda x: x["time_added"], reverse=True)
@@ -42,7 +63,17 @@ class Deluge:
                     self.client.call("core.remove_torrent", re_torrent["id"], {})
 
     @staticmethod
-    def get_root_folder_torrent(base_folder, path):
+    def get_root_folder_torrent(base_folder: str, path: Path) -> Path:
+        """
+        Gets the main torrent folder.
+
+        There is no way to get the main torrent folder, then you need to find out.
+
+        :param base_folder: Passing save_path from torrent.
+        :param path: Passing the path of the current file.
+
+        :return: main torrent folder.
+        """
         path = Path(path)
         if path.is_dir():
             pre_path = path
@@ -51,7 +82,14 @@ class Deluge:
                 path = path.parent
             return pre_path
 
-    def remove_old_files_in_new_torrent(self, torrent_id):
+    def remove_old_files_in_new_torrent(self, torrent_id: str):
+        """
+        Remove files from the folder that should not be in the torrent.
+
+        If we find duplicate torrents, delete the oldest ones and check for extra files in the new one.
+
+        :param torrent_id: Torrent id deluge.
+        """
         torrent = self.client.call(
             "core.get_torrent_status", torrent_id, ["name", "save_path", "files"]
         )
