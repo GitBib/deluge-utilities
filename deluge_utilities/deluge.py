@@ -1,9 +1,8 @@
 import collections
+import contextlib
 import logging
-import os
-from pathlib import Path
-
 from deluge_client import LocalDelugeRPCClient
+from pathlib import Path
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
@@ -94,25 +93,24 @@ class Deluge:
             "core.get_torrent_status", torrent_id, ["name", "save_path", "files"]
         )
         current_files = [
-            os.path.join(torrent["save_path"], file["path"])
+            Path(torrent["save_path"]) / file["path"]
             for file in torrent["files"]
         ]
         folder = self.get_root_folder_torrent(
             torrent["save_path"], Path(current_files[0]).parent
         )
-        if str(folder) != torrent["save_path"]:
-            logging.info(f"Look in {folder}")
-            remove_files = []
-            for root, _, files in os.walk(folder):
-                remove_files.extend(os.path.join(root, file) for file in files)
-            for file in current_files:
-                try:
-                    remove_files.remove(file)
-                except ValueError:
-                    pass
-            for file in remove_files:
-                logging.info(f"Remove {file}")
-                os.remove(file)
+        if folder is None or str(folder) == torrent["save_path"]:
+            logging.warning(f"Unable to determine root folder for torrent {torrent_id}")
+            return
+
+        logging.info(f"Look in {folder}")
+        remove_files = [path for path in folder.rglob('*') if path.is_file()]
+        for file in current_files:
+            with contextlib.suppress(ValueError):
+                remove_files.remove(file)
+        for file in remove_files:
+            logging.info(f"Remove {file}")
+            file.unlink()
 
     def torrent_check(self):
         for key, torrent in self.client.call(
