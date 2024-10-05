@@ -25,41 +25,41 @@ class Deluge:
         if not self.client.connected:
             raise ValueError()
 
-    def torrent_dict(self) -> dict:
+    def torrent_dict(self) -> dict[str, list[dict]]:
         """
-        Getting the torrent list.
+        Get the list of torrents.
 
-        We get a modified torrent dictionary.
+        Returns a modified dictionary of torrents.
 
-        :return: dict torrents.
+        :return: A dictionary of torrents where the key is the torrent name and the value is a list of dictionaries with torrent information.
         """
-        logging.info("Start get list torrents")
+        logging.info("Starting to get list of torrents")
         torrents = collections.defaultdict(list)
-        for key, torrent in self.client.call(
-            "core.get_torrents_status", {}, ["name", "time_added"]
+        for torrent_id, torrent_info in self.client.call(
+                "core.get_torrents_status", {}, ("name", "time_added")
         ).items():
-            torrents[torrent["name"]].append(
-                dict(
-                    id=key,
-                    **torrent,
-                )
-            )
-        return torrents
+            torrents[torrent_info["name"]].append({
+                "id": torrent_id,
+                **torrent_info
+            })
+        return dict(torrents)
 
     def old_torrent_search(self):
         """
         Search and delete old torrents.
 
-        Delete similar torrents by name from the list, and then look in the new torrent folder for files that are not
-        in the torrent.
+        Removes similar torrents by name from the list, then checks the new torrent folder for files 
+        that are not in the torrent.
         """
         torrents = self.torrent_dict()
-        for _, torrent in torrents.items():
-            list_torrents = sorted(torrent, key=lambda x: x["time_added"], reverse=True)
-            if old_list_torrents := list_torrents[1:]:
-                self.remove_old_files_in_new_torrent(list_torrents[0]["id"])
-                for re_torrent in old_list_torrents:
-                    self.client.call("core.remove_torrent", re_torrent["id"], {})
+        for torrent_list in torrents.values():
+            sorted_torrents = sorted(torrent_list, key=lambda x: x["time_added"], reverse=True)
+            if len(sorted_torrents) > 1:
+                newest_torrent, *old_torrents = sorted_torrents
+                self.remove_old_files_in_new_torrent(newest_torrent["id"])
+                for old_torrent in old_torrents:
+                    self.client.call("core.remove_torrent", old_torrent["id"], True)
+        logging.info("Old torrent check and removal completed")
 
     @staticmethod
     def get_root_folder_torrent(base_folder: str, path: Path) -> Path:
@@ -114,7 +114,7 @@ class Deluge:
 
     def torrent_check(self):
         for key, torrent in self.client.call(
-            "core.get_torrents_status", {}, ["name", "time_added"]
+                "core.get_torrents_status", {}, ["name", "time_added"]
         ).items():
             logging.info(f"Check torrent: {torrent['name']}")
             self.remove_old_files_in_new_torrent(key)
