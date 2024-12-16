@@ -58,7 +58,7 @@ class Deluge:
                 newest_torrent, *old_torrents = sorted_torrents
                 self.remove_old_files_in_new_torrent(newest_torrent["id"])
                 for old_torrent in old_torrents:
-                    self.client.call("core.remove_torrent", old_torrent["id"], True)
+                    self.client.call("core.remove_torrent", old_torrent["id"], {})
         logging.info("Old torrent check and removal completed")
 
     @staticmethod
