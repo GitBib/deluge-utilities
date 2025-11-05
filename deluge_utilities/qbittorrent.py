@@ -9,23 +9,36 @@ logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
 
 class QBittorrent(BaseTorrentClient):
-    def __init__(self, host: str = "localhost", port: int = 8080, username: str = "", password: str = ""):
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int | None = 8080,
+        username: str = "",
+        password: str = "",
+        verify_cert: bool = True,
+    ):
         """
         Initializing work with qBittorrent.
 
         Initialize work with the qBittorrent client.
 
-        :param host: qBittorrent host address (default: localhost).
-        :param port: qBittorrent Web UI port (default: 8080).
+        :param host: qBittorrent host address or full URL (default: localhost).
+        :param port: qBittorrent Web UI port (default: 8080). Set to None if host is full URL.
         :param username: qBittorrent Web UI username.
         :param password: qBittorrent Web UI password.
+        :param verify_cert: Verify SSL certificate (default: True).
         """
-        self.client = Client(
-            host=host,
-            port=port,
-            username=username,
-            password=password,
-        )
+        client_params = {
+            "host": host,
+            "username": username,
+            "password": password,
+            "VERIFY_WEBUI_CERTIFICATE": verify_cert,
+        }
+
+        if port is not None:
+            client_params["port"] = port
+
+        self.client = Client(**client_params)
         try:
             self.client.auth_log_in()
         except LoginFailed as e:
