@@ -21,8 +21,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "deluge-client>=1.9.0,<2",
-    "qbittorrent-api>=2024.1.59",
+    "deluge-client>=1.10.2,<2",
+    "qbittorrent-api>=2025.7.0",
 ]
 
 [project.urls]

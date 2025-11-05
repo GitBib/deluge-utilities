@@ -102,11 +102,11 @@ wheels = [
 
 [[package]]
 name = "deluge-client"
-version = "1.9.0"
+version = "1.10.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ef/52/f68966132aebea6703caa0b9d12e40581f09725ddf07c97ebb2c4664bb84/deluge-client-1.9.0.tar.gz", hash = "sha256:0d2f12108a147d44590c8df63997fcb32f8b2fbc18f8cbb221f0136e2e372b85", size = 11708, upload-time = "2020-05-16T08:49:47.493Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/53/d6672ad7b44190d578ce7520822af34e7119760df9934cad4d730b0592a2/deluge-client-1.10.2.tar.gz", hash = "sha256:3881aee3c4e0ca9dd8a56b710047b837e1d087a83e421636a074771f92a9f1b5", size = 12601, upload-time = "2024-02-17T15:15:40.249Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/46/0e/1e1e4a63be74367655d74b2ca17b47c66544d8608bb7412ed2eee5092a4e/deluge_client-1.9.0-py2.py3-none-any.whl", hash = "sha256:3ee0db7b1da4f55c3210886ca0647d18eaa2f739b7215735424304412484ac06", size = 12132, upload-time = "2020-05-16T08:49:46.28Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/37/167fc27ae423905d3b38824a403f32f12c6b8c5679104e47838dfb294afd/deluge_client-1.10.2-py3-none-any.whl", hash = "sha256:ea052663c0ed3a2247517d316c3784d70c83279dd9e088623fd06b164768f4f1", size = 12355, upload-time = "2024-02-17T15:15:38.561Z" },
 ]
 
 [[package]]
@@ -126,8 +126,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "deluge-client", specifier = ">=1.9.0,<2" },
-    { name = "qbittorrent-api", specifier = ">=2024.1.59" },
+    { name = "deluge-client", specifier = ">=1.10.2,<2" },
+    { name = "qbittorrent-api", specifier = ">=2025.7.0" },
 ]
 
 [package.metadata.requires-dev]
