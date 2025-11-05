@@ -1,15 +1,52 @@
-[tool.poetry]
+[project]
 name = "deluge-utilities"
-version = "0.1.0"
-description = ""
-authors = ["GitBib <me@bnff.website>"]
+version = "0.0.5"
+description = "A set of utilities to help you work with Deluge and qBittorrent"
+authors = [{ name = "GitBib", email = "job@bnff.website" }]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+keywords = ["deluge", "qbittorrent", "torrent", "utilities"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-deluge-client = "^1.9.0"
+dependencies = [
+    "deluge-client>=1.9.0,<2",
+    "qbittorrent-api>=2024.1.59",
+]
 
-[tool.poetry.dev-dependencies]
+[project.urls]
+Homepage = "https://github.com/GitBib/deluge-utilities"
+Repository = "https://github.com/GitBib/deluge-utilities"
+"Bug Tracker" = "https://github.com/GitBib/deluge-utilities/issues"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.3",
+    "prek>=0.2.13",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatchling.build.targets.wheel]
+packages = ["deluge_utilities"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = []

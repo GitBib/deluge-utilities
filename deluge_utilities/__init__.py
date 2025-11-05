@@ -4,12 +4,19 @@
 :copyright: (c) 2022 GitBib
 """
 
-from .deluge import Deluge
+from importlib.metadata import PackageNotFoundError, version
 
-VERSION = (0, 0, 4)
-__version__ = ".".join(map(str, VERSION))
+from .base_client import BaseTorrentClient
+from .deluge import Deluge
+from .qbittorrent import QBittorrent
+
+try:
+    __version__ = version("deluge-utilities")
+except PackageNotFoundError:
+    # Package is not installed, fallback for development
+    __version__ = "0.0.5-dev"
 
 __author__ = "GitBib"
 __email__ = "job@bnff.website"
 
-__all__ = ["Deluge"]
+__all__ = ["BaseTorrentClient", "Deluge", "QBittorrent"]

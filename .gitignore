@@ -179,3 +179,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# uv package manager
+.python-version
+.venv/
+poetry.lock
+
