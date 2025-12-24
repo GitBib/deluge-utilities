@@ -40,22 +40,29 @@ class BaseTorrentClient(ABC):
         """
         pass
 
-    def old_torrent_search(self):
+    def old_torrent_search(self, dry_run: bool = True):
         """
         Search and delete old torrents.
 
         Removes similar torrents by name from the list, then checks the new torrent folder for files
         that are not in the torrent.
+
+        :param dry_run: If True, only log what would be deleted.
         """
         torrents = self.torrent_dict()
         for torrent_list in torrents.values():
             sorted_torrents = sorted(torrent_list, key=lambda x: x["time_added"], reverse=True)
             if len(sorted_torrents) > 1:
                 newest_torrent, *old_torrents = sorted_torrents
-                self.remove_old_files_in_new_torrent(newest_torrent["id"])
+                self.remove_old_files_in_new_torrent(newest_torrent["id"], dry_run=dry_run)
                 for old_torrent in old_torrents:
-                    self.remove_torrent(old_torrent["id"])
-        logging.info("Old torrent check and removal completed")
+                    if dry_run:
+                        logging.info(
+                            f"[DRY RUN] Would remove old duplicate torrent: {old_torrent['name']} ({old_torrent['id']})"
+                        )
+                    else:
+                        self.remove_torrent(old_torrent["id"])
+        logging.info(f"Old torrent check and removal completed (dry_run={dry_run})")
 
     @staticmethod
     def get_root_folder_torrent(base_folder: str, path: Path) -> Path:
@@ -111,13 +118,17 @@ class BaseTorrentClient(ABC):
                 logging.info(f"Remove {file}")
                 file.unlink()
 
-    def torrent_check(self):
-        """Check all torrents and remove old files."""
+    def torrent_check(self, dry_run: bool = True):
+        """
+        Check all torrents and remove old files.
+
+        :param dry_run: If True, only log what would be deleted.
+        """
         torrents = self.torrent_dict()
         for torrent_list in torrents.values():
             for torrent in torrent_list:
-                logging.info(f"Check torrent: {torrent['name']}")
-                self.remove_old_files_in_new_torrent(torrent["id"])
+                logging.info(f"Check torrent: {torrent['name']} (dry_run={dry_run})")
+                self.remove_old_files_in_new_torrent(torrent["id"], dry_run=dry_run)
 
     def get_all_active_files(self) -> set[Path]:
         """
@@ -152,7 +163,6 @@ class BaseTorrentClient(ABC):
             logging.error(f"Base path {base_path} does not exist or is not a directory")
             return
 
-        # 1. Remove orphaned files
         for item in base_dir.rglob("*"):
             if item.is_file():
                 if item.resolve() not in active_files:
@@ -162,10 +172,8 @@ class BaseTorrentClient(ABC):
                         logging.info(f"Removing orphaned file: {item}")
                         item.unlink()
 
-        # 2. Remove empty directories (bottom-up)
         for item in sorted(base_dir.rglob("*"), key=lambda x: len(x.parts), reverse=True):
             if item.is_dir():
-                # Check if directory is empty
                 if not any(item.iterdir()):
                     if dry_run:
                         logging.info(f"[DRY RUN] Would remove empty directory: {item}")
