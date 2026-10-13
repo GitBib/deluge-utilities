@@ -1,14 +1,14 @@
 [project]
 name = "deluge-utilities"
-version = "0.0.5"
+version = "0.0.6"
 description = "A set of utilities to help you work with Deluge and qBittorrent"
 authors = [{ name = "GitBib", email = "job@bnff.website" }]
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 keywords = ["deluge", "qbittorrent", "torrent", "utilities"]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -34,6 +34,7 @@ Repository = "https://github.com/GitBib/deluge-utilities"
 dev = [
     "ruff>=0.14.3",
     "prek>=0.2.13",
+    "pytest>=8.3.0",
 ]
 
 [build-system]
@@ -45,7 +46,7 @@ packages = ["deluge_utilities"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py313"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]

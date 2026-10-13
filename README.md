@@ -8,7 +8,7 @@ A set of utilities to help you work with Deluge and qBittorrent torrent clients.
 - Automatic detection and removal of duplicate torrents
 - Clean up extra files in torrent folders
 - Search and remove old torrents while keeping the newest version
-- Support for both local Deluge daemon and remote qBittorrent Web UI
+- Support for local or remote Deluge daemons and remote qBittorrent Web UI
 
 ## Installation
 
@@ -37,14 +37,22 @@ client = Deluge(
     password="your_deluge_password"
 )
 
+# Or connect to a remote daemon (defaults: host="127.0.0.1", port=58846)
+remote = Deluge(
+    username="your_deluge_username",
+    password="your_deluge_password",
+    host="192.0.2.10",
+    port=58846,
+)
+
 # Get list of all torrents grouped by name
 torrents = client.torrent_dict()
 
 # Search and remove old duplicate torrents, keeping only the newest
-client.old_torrent_search()
+client.old_torrent_search(dry_run=False)
 
 # Check all torrents for extra files and remove them
-client.torrent_check()
+client.torrent_check(dry_run=False)
 
 # Get information about a specific torrent
 torrent_info = client.get_torrent_info("torrent_id")
@@ -70,10 +78,10 @@ client = QBittorrent(
 torrents = client.torrent_dict()
 
 # Search and remove old duplicate torrents, keeping only the newest
-client.old_torrent_search()
+client.old_torrent_search(dry_run=False)
 
 # Check all torrents for extra files and remove them
-client.torrent_check()
+client.torrent_check(dry_run=False)
 
 # Get information about a specific torrent
 torrent_info = client.get_torrent_info("torrent_hash")
@@ -104,6 +112,6 @@ else:
 
 # Use the same methods regardless of client type
 torrents = client.torrent_dict()
-client.old_torrent_search()
-client.torrent_check()
+client.old_torrent_search(dry_run=False)
+client.torrent_check(dry_run=False)
 ```
